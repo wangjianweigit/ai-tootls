@@ -178,9 +178,13 @@ async def delete_model(model_id: int) -> JSONResponse:
 @router.post("/compare", response_class=JSONResponse)
 async def compare(
 	file: UploadFile = File(...),
-	prompt: str = Form(""),
+	prompt: str = Form(...),  # 必填字段
 	model_ids: str = Form(""),
 ) -> JSONResponse:
+	# 验证提示词不能为空
+	if not prompt or not prompt.strip():
+		raise HTTPException(status_code=400, detail="提示词不能为空，请输入分析要求")
+	
 	try:
 		content = await file.read()
 		Image.open(io.BytesIO(content))

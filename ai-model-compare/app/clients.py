@@ -14,18 +14,14 @@ import logging
 from .formatting import normalize_single_line
 
 
-def _load_prompt_text() -> str:
-	return Path(settings.prompt_path).read_text(encoding="utf-8").strip()
-
-
 async def call_ragflow_with_image(image_bytes: bytes, filename: str) -> str:
 	"""Call RagFlow (or compatible) to analyze the image and return single-line result.
 
 	Strategy:
 	1) Prefer RagFlow endpoint if configured; else fallback to OpenAI-compatible endpoint.
-	2) We send a system prompt from prompt.txt and a user message with the image.
+	2) We send a user message with the image (no system prompt).
 	"""
-	system_prompt = _load_prompt_text()
+	system_prompt = ""  # 不再使用预设提示词
 
 	# Prefer RagFlow
 	if settings.ragflow_base_url and settings.ragflow_api_key and settings.model:
@@ -164,10 +160,8 @@ async def _call_openai_like_with_user_text(
 	b64 = base64.b64encode(image_bytes).decode("utf-8")
 	data_url = f"data:image/{_suffix_of(filename)};base64,{b64}"
 
-	# 合并 system_prompt 和 user_text，因为某些本地部署可能不支持 system 角色
-	combined_text = user_text or "请分析图片并按要求输出"
-	if system_prompt:
-		combined_text = f"{system_prompt}\n\n{combined_text}"
+	# 直接使用用户输入的提示词，不再合并系统提示词
+	combined_text = user_text if user_text else "请分析图片并按要求输出"
 
 	payload: Dict[str, Any] = {
 		"model": model,
@@ -265,13 +259,13 @@ async def compare_multiple_models(
 	Args:
 		image_bytes: Image data
 		filename: Image filename
-		user_prompt: User's prompt text
+		user_prompt: User's prompt text (必填)
 		model_configs: List of model configs, each with keys: id, provider, label, base_url, api_key, model
 
 	Returns:
 		Dict mapping model_id (as string) -> { ok: bool, text|error, elapsed_ms, provider, label }
 	"""
-	system_prompt = _load_prompt_text()
+	system_prompt = ""  # 不再使用预设提示词
 	logger = logging.getLogger("app.compare")
 	logger.info(f"compare_multiple_models: {len(model_configs)} models")
 
@@ -344,7 +338,7 @@ async def compare_across_providers(
 
 	Returns a dict mapping provider -> { ok: bool, text|error, elapsed_ms }.
 	"""
-	system_prompt = _load_prompt_text()
+	system_prompt = ""  # 不再使用预设提示词
 	logger = logging.getLogger("app.compare")
 	logger.info(
 		"compare start: kimi=%s qwen=%s doubao=%s",

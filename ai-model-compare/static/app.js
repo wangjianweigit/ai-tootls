@@ -85,10 +85,17 @@ if (btnRefresh) {
 $('#run').onclick = async () => {
 	const fileInput = $('#file');
 	const f = fileInput.files[0];
-	const prompt = $('#prompt').value || '';
+	const prompt = $('#prompt').value.trim();
 
 	if (!f) {
 		alert('⚠️ 请先选择图片');
+		return;
+	}
+
+	// 验证提示词必填
+	if (!prompt) {
+		alert('⚠️ 请输入提示词（必填）');
+		$('#prompt').focus();
 		return;
 	}
 

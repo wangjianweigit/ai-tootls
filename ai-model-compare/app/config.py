@@ -40,8 +40,6 @@ class Settings(BaseSettings):
 	# HTTP timeout (seconds) for upstream model requests
 	http_timeout_seconds: int = Field(default=600, validation_alias="HTTP_TIMEOUT_SECONDS")
 
-	prompt_path: Path = Field(default=Path(__file__).resolve().parent.parent / "config" / "prompt.txt")
-
 	# pydantic v2 configuration
 	model_config = {
 		"env_file": str(Path(__file__).resolve().parent.parent / ".env"),
