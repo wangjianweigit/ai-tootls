@@ -1,0 +1,450 @@
+/**
+ * 海心AI工具集 - 导航栏样式
+ * 现代化、响应式设计
+ * 注意：此样式文件需要在 Bootstrap 之后加载，以确保样式优先级正确
+ */
+
+/* ========== 基础样式 ========== */
+.haixin-navbar {
+	position: sticky !important;
+	top: 0;
+	z-index: 1000 !important;
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+  
+  .nav-container {
+	max-width: 1400px;
+	margin: 0 auto;
+	padding: 0 20px;
+	display: flex;
+	align-items: center;
+	gap: 30px;
+  }
+  
+  /* ========== 品牌Logo区域 ========== */
+  .nav-brand {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 16px 20px;
+	cursor: pointer;
+	user-select: none;
+	transition: all 0.3s ease;
+	border-radius: 8px;
+  }
+  
+  .nav-brand:hover,
+  .nav-brand.active {
+	background: rgba(255, 255, 255, 0.15);
+  }
+  
+  .brand-text {
+	font-size: 18px;
+	font-weight: 600;
+	color: #ffffff;
+	letter-spacing: 0.5px;
+  }
+  
+  .dropdown-icon {
+	color: rgba(255, 255, 255, 0.8);
+	transition: transform 0.3s ease;
+  }
+  
+  .nav-brand.active .dropdown-icon {
+	transform: rotate(180deg);
+  }
+  
+  /* ========== 下拉菜单 ========== */
+  .nav-dropdown {
+	position: absolute !important;
+	top: 100% !important;
+	left: 20px !important;
+	margin-top: 8px !important;
+	opacity: 0 !important;
+	visibility: hidden !important;
+	transform: translateY(-10px) !important;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+	pointer-events: none !important;
+  }
+  
+  .nav-dropdown.show {
+	opacity: 1 !important;
+	visibility: visible !important;
+	transform: translateY(0) !important;
+	pointer-events: auto !important;
+  }
+  
+  .dropdown-menu {
+	background: #ffffff !important;
+	border-radius: 12px !important;
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
+	padding: 12px !important;
+	min-width: 600px !important;
+	max-height: 80vh !important;
+	overflow-y: auto !important;
+	border: none !important;
+	display: block !important;
+  }
+  
+  /* ========== 工具组 ========== */
+  .tool-group {
+	padding: 12px;
+	border-radius: 8px;
+	transition: background 0.2s ease;
+  }
+  
+  .tool-group:hover {
+	background: #f8f9fa;
+  }
+  
+  .tool-header {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	margin-bottom: 12px;
+  }
+  
+  .tool-icon {
+	font-size: 32px;
+	line-height: 1;
+	flex-shrink: 0;
+  }
+  
+  .tool-info {
+	flex: 1;
+  }
+  
+  .tool-name {
+	font-size: 16px;
+	font-weight: 600;
+	color: #1a1a1a;
+	margin-bottom: 4px;
+  }
+  
+  .tool-desc {
+	font-size: 13px;
+	color: #6b7280;
+	line-height: 1.4;
+  }
+  
+  /* ========== 技术支持信息 ========== */
+  .tool-owner {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin-top: 8px;
+	padding: 5px 10px;
+	background: #f8f9fa;
+	border-radius: 4px;
+	border-left: 2px solid #dee2e6;
+  }
+  
+  .owner-icon {
+	font-size: 10px;
+	line-height: 1;
+	flex-shrink: 0;
+	opacity: 0.5;
+  }
+  
+  .owner-info {
+	font-size: 10px;
+	color: #6b7280;
+	line-height: 1.4;
+	display: flex;
+	align-items: center;
+	gap: 0;
+	flex-wrap: wrap;
+  }
+  
+  .owner-email {
+	font-size: 10px;
+	color: #667eea;
+	text-decoration: none;
+	transition: color 0.2s ease;
+	opacity: 0.8;
+  }
+  
+  .owner-email:hover {
+	color: #764ba2;
+	text-decoration: underline;
+	opacity: 1;
+  }
+  
+  .tool-divider {
+	height: 1px;
+	background: linear-gradient(
+	  to right,
+	  transparent,
+	  #e5e7eb 20%,
+	  #e5e7eb 80%,
+	  transparent
+	);
+	margin: 8px 0;
+  }
+  
+  /* ========== 工具页面列表 ========== */
+  .tool-pages {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+	gap: 8px;
+	margin-left: 44px;
+  }
+  
+  .page-link {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 14px;
+	border-radius: 6px;
+	text-decoration: none;
+	color: #374151;
+	transition: all 0.2s ease;
+	border: 1px solid transparent;
+  }
+  
+  .page-link:hover {
+	background: #f3f4f6;
+	border-color: #e5e7eb;
+	transform: translateX(4px);
+  }
+  
+  .page-link.active {
+	background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+	border-color: #667eea;
+	color: #667eea;
+	font-weight: 500;
+  }
+  
+  .page-icon {
+	font-size: 18px;
+	line-height: 1;
+  }
+  
+  .page-title {
+	font-size: 14px;
+	line-height: 1.2;
+  }
+  
+  /* ========== 当前工具页面导航 ========== */
+  .nav-pages {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	flex: 1;
+  }
+  
+  .nav-page-link {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 16px;
+	border-radius: 8px;
+	text-decoration: none;
+	color: rgba(255, 255, 255, 0.9);
+	font-size: 14px;
+	transition: all 0.2s ease;
+	border: 1px solid transparent;
+  }
+  
+  .nav-page-link:hover {
+	background: rgba(255, 255, 255, 0.15);
+	border-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  .nav-page-link.active {
+	background: rgba(255, 255, 255, 0.25);
+	border-color: rgba(255, 255, 255, 0.3);
+	color: #ffffff;
+	font-weight: 500;
+  }
+  
+  .nav-page-link .page-icon {
+	font-size: 16px;
+  }
+  
+  .nav-page-link .page-title {
+	font-size: 14px;
+  }
+  
+  /* ========== 滚动条美化 ========== */
+  .dropdown-menu::-webkit-scrollbar {
+	width: 6px;
+  }
+  
+  .dropdown-menu::-webkit-scrollbar-track {
+	background: transparent;
+  }
+  
+  .dropdown-menu::-webkit-scrollbar-thumb {
+	background: #d1d5db;
+	border-radius: 3px;
+  }
+  
+  .dropdown-menu::-webkit-scrollbar-thumb:hover {
+	background: #9ca3af;
+  }
+  
+  /* ========== 响应式设计 ========== */
+  @media (max-width: 1024px) {
+	.dropdown-menu {
+	  min-width: 500px;
+	}
+  
+	.tool-pages {
+	  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+	}
+  }
+  
+  @media (max-width: 768px) {
+	.nav-container {
+	  flex-direction: column;
+	  align-items: flex-start;
+	  gap: 12px;
+	  padding: 12px;
+	}
+  
+	.dropdown-menu {
+	  min-width: calc(100vw - 40px);
+	  left: 12px;
+	}
+  
+	.tool-pages {
+	  grid-template-columns: 1fr;
+	  margin-left: 0;
+	}
+  
+	.nav-pages {
+	  width: 100%;
+	  overflow-x: auto;
+	  -webkit-overflow-scrolling: touch;
+	}
+  
+	.nav-page-link {
+	  white-space: nowrap;
+	}
+  }
+  
+  /* ========== 动画效果 ========== */
+  @keyframes slideDown {
+	from {
+	  opacity: 0;
+	  transform: translateY(-10px);
+	}
+	to {
+	  opacity: 1;
+	  transform: translateY(0);
+	}
+  }
+  
+  .nav-dropdown.show .dropdown-menu {
+	animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* ========== 新标签页提示图标 ========== */
+  .page-link[data-tool-id]:not([data-tool-id=""]):hover::after {
+	content: "↗";
+	margin-left: auto;
+	font-size: 12px;
+	color: #9ca3af;
+	transition: all 0.2s ease;
+  }
+  
+  /* ========== 无缝集成到现有页面 ========== */
+  #haixin-nav {
+	margin: 0;
+	padding: 0;
+  }
+  
+  /* 确保导航栏占满整个宽度 */
+  .haixin-navbar {
+	width: 100%;
+	left: 0;
+	right: 0;
+  }
+  
+  /* ========== 加载状态 ========== */
+  .nav-loading {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	border: 2px solid rgba(255, 255, 255, 0.3);
+	border-top-color: #ffffff;
+	border-radius: 50%;
+	animation: spin 0.8s linear infinite;
+  }
+  
+  @keyframes spin {
+	to {
+	  transform: rotate(360deg);
+	}
+  }
+  
+  /* ========== 可访问性优化 ========== */
+  .page-link:focus,
+  .nav-page-link:focus {
+	outline: 2px solid #667eea;
+	outline-offset: 2px;
+  }
+  
+  /* 高对比度模式 */
+  @media (prefers-contrast: high) {
+	.haixin-navbar {
+	  border-bottom: 2px solid #000000;
+	}
+  
+	.page-link,
+	.nav-page-link {
+	  border-width: 2px;
+	}
+  }
+  
+  /* 减少动画模式 */
+  @media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+	  animation-duration: 0.01ms !important;
+	  animation-iteration-count: 1 !important;
+	  transition-duration: 0.01ms !important;
+	}
+  }
+  
+  /* ========== 开发者接入按钮 ========== */
+  .nav-actions {
+	margin-left: auto;
+	display: flex;
+	align-items: center;
+  }
+  
+  .dev-guide-btn {
+	padding: 10px 20px;
+	background: rgba(255, 255, 255, 0.95);
+	color: #667eea;
+	text-decoration: none;
+	border-radius: 8px;
+	font-weight: 600;
+	font-size: 14px;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	transition: all 0.3s ease;
+	border: 2px solid transparent;
+	white-space: nowrap;
+  }
+  
+  .dev-guide-btn:hover {
+	background: #ffffff;
+	color: #764ba2;
+	border-color: rgba(255, 255, 255, 0.3);
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .dev-guide-btn:active {
+	transform: translateY(0);
+  }
+  
+  

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>多模态模型对比</title>
+	<link rel="icon" type="image/x-icon" href="https://static.aistarfish.com/front-release/file/F2021082014202908600003617.bitbug_favicon(1).ico">
+	<link rel="stylesheet" href="/static/nav.css?v=12">
+	<link rel="stylesheet" href="/static/style.css">
+	<script defer src="/static/nav.js?v=12"></script>
+</head>
+<body style="padding: 0;">
+	<!-- 导航栏 -->
+	<div id="haixin-nav"></div>
+	
+    <div class="container" style="padding: 24px; max-width: 1400px; margin: 0 auto;">
+		<header>
+			<h1>🤖 多模态模型对比</h1>
+			<p class="subtitle">同时对比多个AI视觉模型的分析结果</p>
+		</header>
+
+		<div class="card">
+			<!-- 文件上传 -->
+			<div class="form-group">
+				<label for="file" class="label">
+					<span>📷 选择图片</span>
+					<span class="file-info" id="file-info">未选择任何文件</span>
+				</label>
+				<input type="file" id="file" accept="image/*" />
+			</div>
+
+			<!-- 模型选择 -->
+			<div class="form-group">
+				<div class="label-row">
+					<label class="label">🎯 选择对比模型（直接点击多选）</label>
+					<button id="refresh-models" class="btn-secondary">🔄 刷新模型</button>
+				</div>
+				<div id="model-selector" class="model-selector">
+					<div class="loading-state">
+						<div class="spinner"></div>
+						<span>点击"刷新模型"加载可用模型...</span>
+					</div>
+				</div>
+				<div class="help-text">
+			<a href="/ai-model-compare/models-ui" target="_blank">➕ 管理模型</a>
+				</div>
+			</div>
+
+			<!-- 提示词 -->
+			<div class="form-group">
+				<label for="prompt" class="label">💬 提示词（可选）</label>
+				<textarea id="prompt" placeholder="输入自定义提示词，留空使用默认提示词"></textarea>
+			</div>
+
+			<!-- 运行按钮 -->
+			<div class="action-row">
+				<button id="run" class="btn-primary">
+					<span class="btn-icon">▶</span>
+					<span>运行对比</span>
+				</button>
+				<span id="status" class="status-text"></span>
+			</div>
+		</div>
+
+		<!-- 结果展示 -->
+		<div id="results" class="results-grid"></div>
+	</div>
+
+	<script src="/static/app.js"></script>
+</body>
+</html>
+

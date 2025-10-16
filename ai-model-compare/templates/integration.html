@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>开发者接入指南 - 海心工具集</title>
+	<link rel="icon" type="image/x-icon" href="https://static.aistarfish.com/front-release/file/F2021082014202908600003617.bitbug_favicon(1).ico">
+	<link rel="stylesheet" href="/static/nav.css?v=12">
+	<style>
+		body {
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+			line-height: 1.7;
+			color: #333;
+			background: #f5f7fa;
+			margin: 0;
+			padding: 0;
+		}
+		.container {
+			max-width: 1100px;
+			margin: 0 auto;
+			padding: 24px;
+		}
+		.header {
+			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+			color: white;
+			padding: 50px 30px;
+			border-radius: 16px;
+			margin-bottom: 36px;
+			box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+		}
+		.header h1 {
+			margin: 0 0 16px 0;
+			font-size: 3em;
+			font-weight: 700;
+		}
+		.header p {
+			margin: 0;
+			font-size: 1.3em;
+			opacity: 0.95;
+		}
+		.back-link {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			color: #667eea;
+			text-decoration: none;
+			font-weight: 600;
+			margin-bottom: 24px;
+			transition: color 0.2s;
+			font-size: 1.05em;
+		}
+		.back-link:hover {
+			color: #764ba2;
+		}
+		.card {
+			background: white;
+			border-radius: 16px;
+			padding: 40px;
+			margin-bottom: 28px;
+			box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+			border: 1px solid #e9ecef;
+		}
+		.card h2 {
+			color: #667eea;
+			margin: 0 0 20px 0;
+			padding-bottom: 16px;
+			border-bottom: 3px solid #f0f0f0;
+			font-size: 2em;
+			font-weight: 700;
+		}
+		.card h3 {
+			color: #444;
+			margin: 32px 0 16px 0;
+			font-size: 1.5em;
+			font-weight: 600;
+		}
+		.card h4 {
+			color: #555;
+			margin: 24px 0 12px 0;
+			font-size: 1.2em;
+			font-weight: 600;
+		}
+		.code-block {
+			background: #1e1e1e;
+			color: #d4d4d4;
+			border-radius: 8px;
+			padding: 20px;
+			margin: 16px 0;
+			overflow-x: auto;
+			font-family: 'Monaco', 'Menlo', 'Consolas', 'Courier New', monospace;
+			font-size: 0.9em;
+			line-height: 1.5;
+			box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+		}
+		.code-block pre {
+			margin: 0;
+		}
+		.highlight {
+			background: #f8f9fa;
+			border-left: 4px solid #667eea;
+			padding: 20px;
+			margin: 20px 0;
+			border-radius: 6px;
+		}
+		.highlight strong {
+			color: #667eea;
+		}
+		.feature-list {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+			gap: 16px;
+			margin: 24px 0;
+		}
+		.feature-item {
+			background: #f8f9fa;
+			padding: 20px;
+			border-radius: 12px;
+			border: 2px solid #e9ecef;
+			transition: all 0.3s;
+		}
+		.feature-item:hover {
+			border-color: #667eea;
+			transform: translateY(-2px);
+			box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+		}
+		.feature-item strong {
+			color: #667eea;
+			font-size: 1.1em;
+		}
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			margin: 20px 0;
+			background: white;
+			border-radius: 8px;
+			overflow: hidden;
+		}
+		thead {
+			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+			color: white;
+		}
+		th {
+			padding: 16px;
+			text-align: left;
+			font-weight: 600;
+			font-size: 1.05em;
+		}
+		td {
+			padding: 14px 16px;
+			border-bottom: 1px solid #f0f0f0;
+		}
+		tr:hover {
+			background: #f8f9fa;
+		}
+		td code {
+			background: #f1f3f5;
+			padding: 3px 8px;
+			border-radius: 4px;
+			font-size: 0.9em;
+			color: #d63031;
+		}
+		ul, ol {
+			padding-left: 28px;
+			margin: 16px 0;
+		}
+		li {
+			margin: 10px 0;
+			line-height: 1.6;
+		}
+		.toc {
+			background: #f8f9fa;
+			padding: 24px;
+			border-radius: 12px;
+			margin-bottom: 32px;
+			border: 2px solid #e9ecef;
+		}
+		.toc h3 {
+			margin-top: 0;
+			color: #667eea;
+		}
+		.toc ul {
+			list-style: none;
+			padding-left: 0;
+		}
+		.toc li {
+			margin: 8px 0;
+		}
+		.toc a {
+			color: #495057;
+			text-decoration: none;
+			transition: color 0.2s;
+		}
+		.toc a:hover {
+			color: #667eea;
+		}
+		.badge {
+			display: inline-block;
+			padding: 6px 12px;
+			border-radius: 20px;
+			font-size: 0.85em;
+			font-weight: 600;
+			margin-right: 8px;
+		}
+		.badge-success {
+			background: #d4edda;
+			color: #155724;
+		}
+		.badge-info {
+			background: #d1ecf1;
+			color: #0c5460;
+		}
+		.badge-warning {
+			background: #fff3cd;
+			color: #856404;
+		}
+		.step-number {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 32px;
+			height: 32px;
+			background: #667eea;
+			color: white;
+			border-radius: 50%;
+			font-weight: bold;
+			margin-right: 12px;
+		}
+	</style>
+</head>
+<body style="padding: 0;">
+	<!-- 导航栏 -->
+	<div id="haixin-nav"></div>
+	
+	<div class="container">
+		<a href="/ai-model-compare/ui" class="back-link">
+			← 返回主页
+		</a>
+		
+		<div class="header">
+			<h1>🔧 海心AI工具集 - 开发者接入指南</h1>
+			<p>快速了解如何将新工具接入到海心工具集平台</p>
+		</div>
+
+		<!-- 目录 -->
+		<div class="toc">
+			<h3>📋 快速导航</h3>
+			<ul>
+				<li><a href="#overview">平台概述</a></li>
+				<li><a href="#config">配置说明</a></li>
+				<li><a href="#development">开发规范</a></li>
+				<li><a href="#integration">集成步骤</a></li>
+				<li><a href="#deployment">部署流程</a></li>
+				<li><a href="#practices">最佳实践</a></li>
+			</ul>
+		</div>
+
+		<!-- 平台概述 -->
+		<div class="card" id="overview">
+			<h2>🚀 平台概述</h2>
+			
+			<h3>架构设计</h3>
+			<p>海心AI工具集采用<strong>统一导航栏 + 独立工具</strong>的架构模式：</p>
+			
+			<div class="code-block"><pre>haixin-tools/
+├── tools.json              # 全局工具配置
+├── start-all.sh           # 统一启动脚本
+├── stop-all.sh            # 统一停止脚本
+├── ai-model-compare/      # 工具1：AI模型对比
+│   ├── app/
+│   ├── templates/
+│   └── static/
+└── excelParseTools/       # 工具2：Excel解析
+    ├── templates/
+    └── run.py</pre></div>
+
+			<h3>核心特性</h3>
+			<div class="feature-list">
+				<div class="feature-item">
+					<strong>✅ 统一导航栏</strong>
+					<p>所有工具共享同一个导航栏，用户体验一致</p>
+				</div>
+				<div class="feature-item">
+					<strong>✅ 独立服务</strong>
+					<p>每个工具独立运行，互不影响</p>
+				</div>
+				<div class="feature-item">
+					<strong>✅ 动态配置</strong>
+					<p>通过 tools.json 自动发现和注册工具</p>
+				</div>
+				<div class="feature-item">
+					<strong>✅ Docker 支持</strong>
+					<p>支持容器化部署，环境隔离</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- 配置说明 -->
+		<div class="card" id="config">
+			<h2>⚙️ 配置说明</h2>
+			
+			<h3>tools.json 配置文件</h3>
+			<p>所有工具通过 <code>tools.json</code> 进行统一配置和管理：</p>
+			
+			<div class="code-block"><pre>{
+  "brand": {
+    "title": "海心AI工具集",
+    "link": "/ai-model-compare/ui"
+  },
+  "tools": [
+    {
+      "id": "your-tool-id",
+      "name": "工具名称",
+      "icon": "🔧",
+      "description": "工具描述",
+      "enabled": true,
+      "owner": {
+        "name": "技术团队",
+        "email": "support@example.com",
+        "contact": "请联系技术支持团队"
+      },
+      "service": {
+        "type": "fastapi",
+        "port": 8080,
+        "path_prefix": "/your-tool",
+        "health_check": "/your-tool/health"
+      },
+      "pages": [
+        {
+          "key": "main",
+          "title": "主页面",
+          "path": "/your-tool/ui",
+          "icon": "🏠"
+        }
+      ]
+    }
+  ]
+}</pre></div>
+
+			<h3>配置项说明</h3>
+			<table>
+				<thead>
+					<tr>
+						<th>字段</th>
+						<th>类型</th>
+						<th>必填</th>
+						<th>说明</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><code>id</code></td>
+						<td>string</td>
+						<td>是</td>
+						<td>工具唯一标识，建议使用小写字母+连字符</td>
+					</tr>
+					<tr>
+						<td><code>name</code></td>
+						<td>string</td>
+						<td>是</td>
+						<td>工具显示名称</td>
+					</tr>
+					<tr>
+						<td><code>icon</code></td>
+						<td>string</td>
+						<td>是</td>
+						<td>emoji 图标（推荐使用单个 emoji）</td>
+					</tr>
+					<tr>
+						<td><code>enabled</code></td>
+						<td>boolean</td>
+						<td>是</td>
+						<td>是否启用该工具</td>
+					</tr>
+					<tr>
+						<td><code>owner.name</code></td>
+						<td>string</td>
+						<td>否</td>
+						<td>技术支持负责人/团队名称</td>
+					</tr>
+					<tr>
+						<td><code>owner.email</code></td>
+						<td>string</td>
+						<td>否</td>
+						<td>技术支持邮箱</td>
+					</tr>
+					<tr>
+						<td><code>owner.contact</code></td>
+						<td>string</td>
+						<td>否</td>
+						<td>联系方式说明</td>
+					</tr>
+					<tr>
+						<td><code>service.type</code></td>
+						<td>string</td>
+						<td>是</td>
+						<td>服务框架类型（fastapi/flask）</td>
+					</tr>
+					<tr>
+						<td><code>service.port</code></td>
+						<td>number</td>
+						<td>是</td>
+						<td>服务监听端口</td>
+					</tr>
+					<tr>
+						<td><code>service.path_prefix</code></td>
+						<td>string</td>
+						<td>是</td>
+						<td>URL 路径前缀，必须以 / 开头</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<!-- 开发规范 -->
+		<div class="card" id="development">
+			<h2>📐 开发规范</h2>
+			
+			<h3>1. 目录结构</h3>
+			<div class="code-block"><pre>your-tool/
+├── app/                    # 应用代码
+│   ├── __init__.py
+│   └── main.py
+├── templates/              # HTML 模板
+│   └── index.html
+├── static/                 # 静态资源（可选）
+├── Dockerfile             # Docker 配置
+├── requirements.txt       # 依赖
+└── start.sh              # 启动脚本</pre></div>
+
+			<h3>2. 导航栏集成</h3>
+			<p>所有页面必须包含导航栏容器和加载脚本：</p>
+			<div class="code-block"><pre>&lt;!DOCTYPE html&gt;
+&lt;html lang="zh-CN"&gt;
+&lt;head&gt;
+    &lt;link rel="stylesheet" href="/static/nav.css?v=2"&gt;
+    &lt;link rel="icon" href="https://static.aistarfish.com/front-release/file/F2021082014202908600003617.bitbug_favicon(1).ico"&gt;
+&lt;/head&gt;
+&lt;body style="padding: 0;"&gt;
+    &lt;!-- 导航栏容器 --&gt;
+    &lt;div id="haixin-nav"&gt;&lt;/div&gt;
+    
+    &lt;!-- 你的页面内容 --&gt;
+    &lt;div class="container"&gt;...&lt;/div&gt;
+    
+    &lt;!-- 导航栏脚本 --&gt;
+    &lt;script defer src="/static/nav.js?v=2"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre></div>
+
+			<h3>3. 健康检查接口</h3>
+			<p>每个工具必须提供健康检查接口：</p>
+			<div class="code-block"><pre># FastAPI 示例
+@router.get("/your-tool/health")
+async def health():
+    return "ok"
+
+# Flask 示例
+@app.route('/your-tool/health')
+def health():
+    return jsonify({"service": "your-tool", "status": "ok"})</pre></div>
+		</div>
+
+		<!-- 集成步骤 -->
+		<div class="card" id="integration">
+			<h2>🔧 集成步骤</h2>
+			
+			<h3><span class="step-number">1</span>创建工具目录</h3>
+			<div class="code-block"><pre>cd /path/to/haixin-tools
+mkdir your-tool
+cd your-tool</pre></div>
+
+			<h3><span class="step-number">2</span>开发工具核心功能</h3>
+			<p>参考现有工具（<code>ai-model-compare</code> 或 <code>excelParseTools</code>）的结构开发。</p>
+
+			<h3><span class="step-number">3</span>创建启动脚本</h3>
+			<div class="code-block"><pre>#!/bin/bash
+cd "$(dirname "$0")"
+
+# 创建虚拟环境
+python3.11 -m venv .venv
+source .venv/bin/activate
+
+# 安装依赖
+pip install -r requirements.txt
+
+# 启动服务
+uvicorn app.main:app --host 0.0.0.0 --port 8080 &</pre></div>
+
+			<h3><span class="step-number">4</span>更新 tools.json</h3>
+			<p>在 <code>tools.json</code> 的 <code>tools</code> 数组中添加您的工具配置。</p>
+
+			<h3><span class="step-number">5</span>更新统一启动脚本</h3>
+			<p>编辑 <code>start-all.sh</code>，添加工具启动命令：</p>
+			<div class="code-block"><pre>start_tool "你的工具名称" "your-tool" "start.sh"</pre></div>
+
+			<h3><span class="step-number">6</span>测试工具</h3>
+			<div class="code-block"><pre># 启动测试
+./start.sh
+
+# 健康检查
+curl http://localhost:8080/your-tool/health</pre></div>
+		</div>
+
+		<!-- 部署流程 -->
+		<div class="card" id="deployment">
+			<h2>📦 部署流程</h2>
+			
+			<h3>本地部署</h3>
+			<div class="code-block"><pre># 启动所有工具
+./start-all.sh
+
+# 停止所有工具
+./stop-all.sh</pre></div>
+
+			<h3>远程部署</h3>
+			<div class="code-block"><pre># 打包并部署到远程服务器
+./package.sh && ./remote-docker-deploy.sh</pre></div>
+
+			<div class="highlight">
+				<strong>💡 提示：</strong>
+				<ul style="margin: 8px 0 0 0;">
+					<li>打包脚本会自动排除不必要的文件</li>
+					<li>远程部署会自动构建 Docker 镜像</li>
+					<li>所有工具会自动重启并加载新配置</li>
+				</ul>
+			</div>
+		</div>
+
+		<!-- 最佳实践 -->
+		<div class="card" id="practices">
+			<h2>💡 最佳实践</h2>
+			
+			<h3>端口分配建议</h3>
+			<table>
+				<thead>
+					<tr>
+						<th>端口范围</th>
+						<th>用途</th>
+						<th>已使用</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>8000-8099</td>
+						<td>AI/ML 相关工具</td>
+						<td>8000 (AI 模型对比)</td>
+					</tr>
+					<tr>
+						<td>5000-5099</td>
+						<td>数据处理工具</td>
+						<td>5001 (Excel 解析)</td>
+					</tr>
+					<tr>
+						<td>9000-9099</td>
+						<td>其他工具</td>
+						<td>-</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<h3>代码规范</h3>
+			<ul>
+				<li>使用统一的错误响应格式</li>
+				<li>配置使用环境变量或 .env 文件</li>
+				<li>日志文件统一放在 <code>logs/</code> 目录</li>
+				<li>数据库文件统一放在 <code>data/</code> 目录</li>
+				<li>静态资源放在 <code>static/</code> 目录</li>
+			</ul>
+
+			<h3>故障排查</h3>
+			<div class="highlight">
+				<strong>常见问题：</strong>
+				<ul style="margin: 8px 0 0 0;">
+					<li><strong>导航栏不显示</strong>：检查 nav.css 和 nav.js 是否正确引入</li>
+					<li><strong>工具未显示</strong>：确认 tools.json 中 enabled 为 true</li>
+					<li><strong>端口冲突</strong>：使用 <code>lsof -i :端口</code> 查找占用进程</li>
+				</ul>
+			</div>
+		</div>
+
+		<!-- 技术支持 -->
+		<div class="card">
+			<h2>📞 技术支持</h2>
+			<p>如有问题或需要帮助，请联系：</p>
+			<ul>
+				<li>💬 企业微信：<strong style="color: #667eea;">承枫(01099)</strong></li>
+				<li>📧 邮箱：<a href="mailto:jianwei.w@aistarfish.com" style="color: #667eea;">jianwei.w@aistarfish.com</a></li>
+				<li>📚 完整文档：<a href="https://aistarfish.yuque.com/engpvq/dr1gg3/zargxr9bqxb28hrt" style="color: #667eea;" target="_blank">海心AI工具集 - 新工具接入指南</a></li>
+				<li>🏠 返回：<a href="/ai-model-compare/ui" style="color: #667eea;">海心AI工具集主页</a></li>
+			</ul>
+		</div>
+	</div>
+
+	<script defer src="/static/nav.js?v=12"></script>
+</body>
+</html>
+

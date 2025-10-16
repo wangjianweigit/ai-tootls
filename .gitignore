@@ -1,0 +1,155 @@
+# 海心AI工具集 - Git 忽略文件配置
+
+# ==================== Python ====================
+# 字节码文件
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# 分发/打包
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# 虚拟环境
+.venv/
+venv/
+ENV/
+env/
+.env
+
+# ==================== 日志和进程文件 ====================
+# 日志文件
+*.log
+logs/
+*.pid
+
+# ==================== IDE 和编辑器 ====================
+# VS Code
+.vscode/
+.history/
+
+# PyCharm
+.idea/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# ==================== 系统文件 ====================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# ==================== 数据和临时文件 ====================
+# 数据库
+*.db
+*.sqlite
+*.sqlite3
+
+# 临时文件
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*~
+
+# 压缩文件
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# ==================== 项目特定 ====================
+# AI模型对比工具
+ai-model-compare/.uvicorn.pid
+ai-model-compare/app.log
+ai-model-compare/data/*.sqlite3
+ai-model-compare/*.tar.gz
+ai-model-compare/models-export.json
+ai-model-compare/config/menus.json  # 旧的单工具配置，已废弃（统一使用根目录 tools.json）
+
+# Excel解析工具
+excelParseTools/.excel_parser.pid
+excelParseTools/excel_parser.log
+excelParseTools/logs/*.log
+excelParseTools/excel_parser_data/imports/*.xlsx
+excelParseTools/excel_parser_data/exports/*.xlsx
+excelParseTools/excel_parser_data/temp/*
+
+# 部署脚本（旧版本包含敏感信息，已删除）
+deploy-docker.sh
+
+# 保留目录结构但忽略内容
+!excelParseTools/excel_parser_data/imports/.gitkeep
+!excelParseTools/excel_parser_data/exports/.gitkeep
+!excelParseTools/excel_parser_data/temp/.gitkeep
+
+# Nginx
+*.log
+
+# ==================== 敏感信息 ====================
+# 环境变量文件
+.env
+.env.local
+.env.*.local
+
+# API 密钥和配置
+**/secrets/
+**/secret.json
+*key*.json
+
+# ==================== 备份文件 ====================
+*.backup
+*.bak
+*.orig
+*~
+
+# ==================== Node.js (如有前端项目) ====================
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# ==================== 其他 ====================
+# Coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# 本地测试
+test_*.py
+*_test.py
+tests/
+

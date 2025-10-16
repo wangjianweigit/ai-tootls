@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  ai-model-compare:
+    build:
+      context: ./ai-model-compare
+      dockerfile: Dockerfile
+    container_name: ai-model-compare
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./ai-model-compare/data:/app/data
+      - ./ai-model-compare/config:/app/config
+    environment:
+      - TZ=Asia/Shanghai
+    restart: unless-stopped
+    networks:
+      - haixin-tools
+
+  excel-parse-tools:
+    build:
+      context: ./excelParseTools
+      dockerfile: Dockerfile
+    container_name: excel-parse-tools
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./excelParseTools/logs:/app/logs
+      - ./excelParseTools/excel_parser_data:/app/excel_parser_data
+    environment:
+      - TZ=Asia/Shanghai
+    restart: unless-stopped
+    networks:
+      - haixin-tools
+
+networks:
+  haixin-tools:
+    driver: bridge
+

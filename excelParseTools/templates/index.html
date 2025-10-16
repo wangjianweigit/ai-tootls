@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Excel半结构化数据解析工具</title>
+    <link rel="icon" type="image/x-icon" href="https://static.aistarfish.com/front-release/file/F2021082014202908600003617.bitbug_favicon(1).ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- 导航栏样式必须在 Bootstrap 之后加载，以覆盖默认样式 -->
+    <link rel="stylesheet" href="/static/nav.css?v=12">
+    <script defer src="/static/nav.js?v=12"></script>
+    <style>
+        .main-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .step-card { border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .step-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 20px; border-radius: 8px 8px 0 0; font-weight: 600; }
+        .step-body { padding: 20px; }
+        .upload-area { border: 2px dashed #dee2e6; border-radius: 8px; padding: 40px; text-align: center; background: #f8f9fa; transition: all 0.3s ease; }
+        .upload-area:hover, .upload-area.dragover { border-color: #667eea; background: #f0f2ff; }
+        .hidden { display: none; }
+        .rule-card { border: 1px solid #dee2e6; border-radius: 6px; padding: 15px; margin: 10px 0; background: #f8f9fa; }
+        .task-item { border: 1px solid #dee2e6; border-radius: 6px; padding: 15px; margin: 10px 0; background: white; }
+        .status-badge { font-size: 0.8em; padding: 4px 8px; }
+    </style>
+</head>
+<body style="padding: 0; margin: 0;">
+<!-- 导航栏 -->
+<div id="haixin-nav"></div>
+
+<div class="main-container" style="margin-top: 20px;">
+    <div class="text-center mb-4">
+        <h1 class="display-4 text-primary">
+            <i class="fas fa-file-excel me-3"></i>Excel半结构化数据解析工具
+        </h1>
+        <p class="lead text-muted">导入Excel文件，配置解析规则，通过AI大模型生成结构化数据</p>
+        <div class="mt-3">
+            <!-- 日志管理已隐藏 -->
+            <a href="/excel-tools/best-practice" class="btn btn-success me-2">
+                <i class="fas fa-book me-2"></i>最佳实践
+            </a>
+            <a href="/excel-tools/tasks" class="btn btn-outline-primary me-2">
+                <i class="fas fa-tasks me-2"></i>任务列表
+            </a>
+        </div>
+    </div>
+    <!-- 步骤1: 文件上传 -->
+    <div class="step-card">
+        <div class="step-header"><i class="fas fa-upload me-2"></i>步骤1: 上传Excel文件</div>
+        <div class="step-body">
+            <div class="upload-area" id="uploadArea">
+                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                <h5>拖拽Excel文件到此处或点击选择文件</h5>
+                <p class="text-muted">支持 .xlsx 和 .xls 格式，最大16MB</p>
+                <input type="file" id="fileInput" class="form-control" accept=".xlsx,.xls" style="display: none;">
+                <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-folder-open me-2"></i>选择文件
+                </button>
+                <div id="selectedFileInfo" class="text-secondary mt-2" style="display:none;"></div>
+            </div>
+            <div class="row mt-3" id="uploadOptions" style="display: none;">
+                <div class="col-md-6">
+                    <label for="indexColumn" class="form-label">索引列（可选）</label>
+                    <select class="form-select" id="indexColumn">
+                        <option value="">使用行号作为索引</option>
+                    </select>
+                    <div class="form-text">选择一列作为索引，便于后续导出联合索引</div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">&nbsp;</label>
+                    <button class="btn btn-success w-100" onclick="uploadFile()">
+                        <i class="fas fa-upload me-2"></i>上传并解析
+                    </button>
+                </div>
+            </div>
+            <div id="uploadProgress" class="progress-container" style="display: none;">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>正在上传文件...</span>
+                    <span id="uploadStatus">准备中</span>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" id="uploadProgressBar" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 步骤2: 文件信息显示 -->
+    <div class="step-card" id="fileInfoCard" style="display: none;">
+        <div class="step-header"><i class="fas fa-info-circle me-2"></i>步骤2: 文件信息</div>
+        <div class="step-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>文件基本信息</h6>
+                    <ul class="list-unstyled">
+                        <li><strong>导入ID:</strong> <span id="importId"></span></li>
+                        <li><strong>数据行数:</strong> <span id="rowCount"></span></li>
+                        <li><strong>数据列数:</strong> <span id="colCount"></span></li>
+                        <li><strong>索引列:</strong> <span id="indexName"></span></li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h6>数据列</h6>
+                    <div id="columnList" class="small"></div>
+                </div>
+            </div>
+            <div class="mt-3">
+                <h6>数据预览</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped" id="previewTable">
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 步骤3: 配置解析规则 -->
+    <div class="step-card" id="rulesCard" style="display: none;">
+        <div class="step-header"><i class="fas fa-cogs me-2"></i>步骤3: 配置解析规则</div>
+        <div class="step-body">
+            <div class="mb-3">
+                <button class="btn btn-primary" onclick="addRule()">
+                    <i class="fas fa-plus me-2"></i>添加解析规则
+                </button>
+            </div>
+            <div class="row g-3">
+                <div class="col-sm-6 col-md-3">
+                    <label class="form-label">线程数</label>
+                    <input type="number" id="threads" class="form-control" min="1" max="8" value="1">
+                    <div class="form-text">1-8，建议从1开始逐步加</div>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    <label class="form-label">检查点间隔</label>
+                    <input type="number" id="checkpointEvery" class="form-control" min="1" max="10000" value="50">
+                    <div class="form-text">每处理多少行保存一次</div>
+                </div>
+            </div>
+            <div id="rulesContainer"></div>
+            <div class="mt-3" id="startTaskSection" style="display: none;">
+                <button class="btn btn-success btn-lg" onclick="startTask()">
+                    <i class="fas fa-play me-2"></i>开始处理任务
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- 步骤4: 任务管理 -->
+    <div class="step-card" id="tasksCard" style="display: none;">
+        <div class="step-header"><i class="fas fa-tasks me-2"></i>步骤4: 任务管理</div>
+        <div class="step-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6>处理任务</h6>
+                <button class="btn btn-outline-primary btn-sm" onclick="refreshTasks()">
+                    <i class="fas fa-sync-alt me-1"></i>刷新
+                </button>
+            </div>
+            <div id="tasksContainer"></div>
+        </div>
+    </div>
+</div>
+<!-- 规则配置模态框 -->
+<div class="modal fade" id="ruleModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">配置解析规则</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="sourceColumn" class="form-label">源列</label>
+                        <select class="form-select" id="sourceColumn" required>
+                            <option value="">请选择源列</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="targetColumns" class="form-label">目标列（用逗号分隔）</label>
+                        <input type="text" class="form-control" id="targetColumns" placeholder="例如: age,name,address" required>
+                    </div>
+                    <div class="mt-3">
+                        <label for="prompt" class="form-label">解析提示词</label>
+                        <textarea class="form-control" id="prompt" rows="6" placeholder="请描述如何从源列中提取目标列的数据..."></textarea>
+                        <div class="form-text">例如：从文本中提取年龄、姓名和地址信息。年龄应该是数字，姓名应该是中文姓名，地址应该包含省市区信息。</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="saveRule()">保存规则</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+let currentImportId = null;
+let currentRules = [];
+let currentTaskId = null;
+let taskStatusInterval = null;
+
+// 文件上传相关
+// 监听文件选择
+if (document.getElementById('fileInput')) {
+    document.getElementById('fileInput').addEventListener('change', handleFileSelect);
+}
+if (document.getElementById('uploadArea')) {
+    document.getElementById('uploadArea').addEventListener('dragover', handleDragOver);
+    document.getElementById('uploadArea').addEventListener('drop', handleDrop);
+}
+
+function handleFileSelect(event) {
+    const file = event.target.files[0];
+    const info = document.getElementById('selectedFileInfo');
+    if (file) {
+        info.style.display = 'block';
+        const sizeKB = (file.size / 1024).toFixed(1);
+        info.innerHTML = `<i class="fas fa-file-excel me-1"></i>已选择：<strong>${file.name}</strong> <span class="ms-2 text-muted">${sizeKB} KB</span>`;
+        showUploadOptions();
+    } else {
+        info.style.display = 'none';
+        info.innerHTML = '';
+        alert('请先选择Excel文件');
+    }
+}
+
+function handleDragOver(event) {
+    event.preventDefault();
+    event.currentTarget.classList.add('dragover');
+}
+
+function handleDrop(event) {
+    event.preventDefault();
+    event.currentTarget.classList.remove('dragover');
+    const files = event.dataTransfer.files;
+    if (files.length > 0) {
+        document.getElementById('fileInput').files = files;
+        showUploadOptions();
+    }
+}
+
+function showUploadOptions() {
+    document.getElementById('uploadOptions').style.display = 'block';
+}
+
+async function uploadFile() {
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+    if (!file) {
+        alert('请选择Excel文件后再上传');
+        document.getElementById('selectedFileInfo').style.display = 'none';
+        return;
+    }
+    const formData = new FormData();
+    formData.append('file', file);
+    const indexColumn = document.getElementById('indexColumn').value;
+    if (indexColumn) {
+        formData.append('index_column', indexColumn);
+    }
+    document.getElementById('uploadProgress').style.display = 'block';
+    document.getElementById('uploadStatus').textContent = '正在上传...';
+    try {
+        const response = await fetch('/excel-tools/upload', {
+            method: 'POST',
+            body: formData
+        });
+        const result = await response.json();
+        if (result.success) {
+            currentImportId = result.import_id;
+            showFileInfo(result.excel_info);
+            document.getElementById('rulesCard').style.display = 'block';
+            document.getElementById('tasksCard').style.display = 'block';
+        } else {
+            alert('上传失败: ' + result.error);
+        }
+    } catch (error) {
+        alert('上传失败: ' + error.message);
+    } finally {
+        document.getElementById('uploadProgress').style.display = 'none';
+    }
+}
+
+function showFileInfo(excelInfo) {
+    document.getElementById('fileInfoCard').style.display = 'block';
+    document.getElementById('importId').textContent = excelInfo.import_id;
+    document.getElementById('rowCount').textContent = excelInfo.shape[0];
+    document.getElementById('colCount').textContent = excelInfo.shape[1];
+    document.getElementById('indexName').textContent = excelInfo.index_name || '行号';
+
+    // 索引列选择：根据返回列名填充，并设置当前索引
+    const indexSelect = document.getElementById('indexColumn');
+    if (indexSelect) {
+        indexSelect.innerHTML = '<option value="">使用行号作为索引</option>';
+        (excelInfo.columns || []).forEach(col => {
+            const opt = document.createElement('option');
+            opt.value = col;
+            opt.textContent = col;
+            indexSelect.appendChild(opt);
+        });
+        // 设置当前索引的显示
+        if (excelInfo.index_name && (excelInfo.columns || []).includes(excelInfo.index_name)) {
+            indexSelect.value = excelInfo.index_name;
+        } else {
+            indexSelect.value = '';
+        }
+        // 绑定一次性事件：更改索引列即调用后端
+        if (!indexSelect.dataset.bound) {
+            indexSelect.addEventListener('change', () => setIndexColumn());
+            indexSelect.dataset.bound = '1';
+        }
+    }
+
+    // 显示列名
+    const columnList = document.getElementById('columnList');
+    columnList.innerHTML = (excelInfo.columns || []).map(col =>
+        `<span class="badge bg-secondary me-1">${col}</span>`
+    ).join('');
+
+    // 更新源列选择器
+    const sourceColumnSelect = document.getElementById('sourceColumn');
+    sourceColumnSelect.innerHTML = '<option value="">请选择源列</option>';
+    (excelInfo.columns || []).forEach(col => {
+        const option = document.createElement('option');
+        option.value = col;
+        option.textContent = col;
+        sourceColumnSelect.appendChild(option);
+    });
+
+    // 显示数据预览
+    showDataPreview(excelInfo.sample_data || []);
+}
+
+async function setIndexColumn() {
+    if (!currentImportId) return;
+    const select = document.getElementById('indexColumn');
+    if (!select) return;
+    const val = select.value; // '' 表示使用行号
+    try {
+        const resp = await fetch('/excel-tools/set_index', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ import_id: currentImportId, index_column: val || null })
+        });
+        const res = await resp.json();
+        if (res.success) {
+            // 更新文件信息展示
+            showFileInfo(res.excel_info);
+        } else {
+            alert('设置索引失败: ' + res.error);
+        }
+    } catch (e) {
+        alert('设置索引失败: ' + e.message);
+    }
+}
+
+function showDataPreview(sampleData) {
+    const table = document.getElementById('previewTable');
+    const thead = table.querySelector('thead');
+    const tbody = table.querySelector('tbody');
+    if (sampleData.length > 0) {
+        // 表头
+        const headerRow = document.createElement('tr');
+        Object.keys(sampleData[0]).forEach(key => {
+            const th = document.createElement('th');
+            th.textContent = key;
+            headerRow.appendChild(th);
+        });
+        thead.innerHTML = '';
+        thead.appendChild(headerRow);
+        // 数据行
+        tbody.innerHTML = '';
+        sampleData.forEach(row => {
+            const tr = document.createElement('tr');
+            Object.values(row).forEach(value => {
+                const td = document.createElement('td');
+                td.textContent = String(value).substring(0, 50);
+                if (String(value).length > 50) {
+                    td.textContent += '...';
+                }
+                tr.appendChild(td);
+            });
+            tbody.appendChild(tr);
+        });
+    }
+}
+
+// 规则管理
+function addRule() {
+    const modal = new bootstrap.Modal(document.getElementById('ruleModal'));
+    modal.show();
+}
+
+async function saveRule() {
+    const sourceColumn = document.getElementById('sourceColumn').value;
+    const targetColumns = document.getElementById('targetColumns').value.split(',').map(s => s.trim());
+    const prompt = document.getElementById('prompt').value;
+    if (!sourceColumn || targetColumns.length === 0 || !prompt) {
+        alert('请填写所有必填字段');
+        return;
+    }
+    try {
+        const response = await fetch('/excel-tools/create_rule', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                source_column: sourceColumn,
+                target_columns: targetColumns,
+                prompt: prompt
+            })
+        });
+        const result = await response.json();
+        if (result.success) {
+            currentRules.push(result.rule);
+            renderRules();
+            bootstrap.Modal.getInstance(document.getElementById('ruleModal')).hide();
+            document.getElementById('sourceColumn').value = '';
+            document.getElementById('targetColumns').value = '';
+            document.getElementById('prompt').value = '';
+        } else {
+            alert('创建规则失败: ' + result.error);
+        }
+    } catch (error) {
+        alert('创建规则失败: ' + error.message);
+    }
+}
+
+function renderRules() {
+    const container = document.getElementById('rulesContainer');
+    container.innerHTML = '';
+    currentRules.forEach((rule, index) => {
+        const ruleCard = document.createElement('div');
+        ruleCard.className = 'rule-card';
+        ruleCard.innerHTML = `
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h6>规则 ${index + 1}</h6>
+                    <p><strong>源列:</strong> ${rule.source_column}</p>
+                    <p><strong>目标列:</strong> ${rule.target_columns.join(', ')}</p>
+                    <p><strong>提示词:</strong> ${rule.prompt.substring(0, 100)}${rule.prompt.length > 100 ? '...' : ''}</p>
+                </div>
+                <button class="btn btn-outline-danger btn-sm" onclick="removeRule(${index})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+        container.appendChild(ruleCard);
+    });
+    if (currentRules.length > 0) {
+        document.getElementById('startTaskSection').style.display = 'block';
+    }
+}
+
+function removeRule(index) {
+    currentRules.splice(index, 1);
+    renderRules();
+}
+
+// 任务管理
+async function startTask() {
+    if (!currentImportId || currentRules.length === 0) {
+        alert('请先上传文件并配置规则');
+        return;
+    }
+    const threads = Number(document.getElementById('threads').value || 1);
+    const checkpointEvery = Number(document.getElementById('checkpointEvery').value || 50);
+    try {
+        const response = await fetch('/excel-tools/start_task', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                import_id: currentImportId,
+                rules: currentRules,
+                threads: threads,
+                checkpoint_every: checkpointEvery
+            })
+        });
+        const result = await response.json();
+        if (result.success) {
+            currentTaskId = result.task_id;
+            alert('任务已启动，正在处理中...');
+            startTaskStatusPolling();
+            refreshTasks();
+        } else {
+            alert('启动任务失败: ' + result.error);
+        }
+    } catch (error) {
+        alert('启动任务失败: ' + error.message);
+    }
+}
+
+async function restartTask(taskId) {
+    try {
+        const resp = await fetch(`/excel-tools/restart/${taskId}`, { method: 'POST' });
+        const res = await resp.json();
+        if (res.success) {
+            alert('任务已重启');
+            refreshTasks();
+        } else {
+            alert('重启失败: ' + res.error);
+        }
+    } catch (e) {
+        alert('重启失败: ' + e.message);
+    }
+}
+
+function startTaskStatusPolling() {
+    if (taskStatusInterval) {
+        clearInterval(taskStatusInterval);
+    }
+    taskStatusInterval = setInterval(async () => {
+        if (currentTaskId) {
+            try {
+                const response = await fetch(`/excel-tools/task_status/${currentTaskId}`);
+                const result = await response.json();
+                if (result.status === 'completed') {
+                    clearInterval(taskStatusInterval);
+                    alert('任务处理完成！');
+                    refreshTasks();
+                } else if (result.status === 'failed') {
+                    clearInterval(taskStatusInterval);
+                    alert('任务处理失败: ' + result.error_message);
+                    refreshTasks();
+                }
+            } catch (error) {
+                console.error('获取任务状态失败:', error);
+            }
+        }
+    }, 2000);
+}
+
+async function refreshTasks() {
+    try {
+        const response = await fetch('/excel-tools/tasks_list');
+        const result = await response.json();
+        if (result.success) {
+            renderTasks(result.tasks);
+        }
+    } catch (error) {
+        console.error('获取任务列表失败:', error);
+    }
+}
+
+function renderTasks(tasks) {
+    const container = document.getElementById('tasksContainer');
+    container.innerHTML = '';
+    if (tasks.length === 0) {
+        container.innerHTML = '<p class="text-muted">暂无任务</p>';
+        return;
+    }
+    tasks.forEach(task => {
+        const taskItem = document.createElement('div');
+        taskItem.className = 'task-item';
+        let statusBadge = '';
+        switch (task.status) {
+            case 'pending':
+                statusBadge = '<span class="badge bg-warning status-badge">等待中</span>';
+                break;
+            case 'processing':
+                statusBadge = '<span class="badge bg-primary status-badge">处理中</span>';
+                break;
+            case 'completed':
+                statusBadge = '<span class="badge bg-success status-badge">已完成</span>';
+                break;
+            case 'failed':
+                statusBadge = '<span class="badge bg-danger status-badge">失败</span>';
+                break;
+        }
+        taskItem.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6>任务 ${String(task.task_id || '').substring(0, 8)}</h6>
+                    <p class="mb-1"><small class="text-muted">开始时间: ${task.start_time ? new Date(task.start_time).toLocaleString() : '-'}</small></p>
+                    <p class="mb-1"><small class="text-muted">进度: ${task.processed_records || 0}/${task.total_records || 0} (${(task.progress || 0).toFixed ? task.progress.toFixed(1) : task.progress}%)</small></p>
+                    ${task.error_message ? `<p class="mb-1 text-danger"><small>错误: ${task.error_message}</small></p>` : ''}
+                </div>
+                <div class="text-end">
+                    ${statusBadge}
+                    ${task.status === 'completed' ? `
+                        <br><button class="btn btn-success btn-sm mt-2" onclick="downloadResult('${task.task_id}')">
+                            <i class="fas fa-download me-1"></i>下载结果
+                        </button>` : ''}
+                    ${(task.status === 'failed' || task.status === 'completed') ? `
+                        <br><button class="btn btn-outline-secondary btn-sm mt-2" onclick="restartTask('${task.task_id}')">
+                            <i class="fas fa-rotate-right me-1"></i>重启
+                        </button>` : ''}
+                </div>
+            </div>
+            ${task.status === 'processing' ? `
+                <div class="progress mt-2">
+                    <div class="progress-bar" style="width: ${task.progress}%"></div>
+                </div>` : ''}
+        `;
+        container.appendChild(taskItem);
+    });
+}
+
+async function downloadResult(taskId) {
+    try {
+        const response = await fetch(`/excel-tools/download/${taskId}`);
+        if (response.ok) {
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `processed_result_${taskId}.xlsx`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        } else {
+            const result = await response.json();
+            alert('下载失败: ' + result.error);
+        }
+    } catch (error) {
+        alert('下载失败: ' + error.message);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    refreshTasks();
+});
+</script>
+</body>
+</html> 

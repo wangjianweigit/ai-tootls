@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>模型管理</title>
+	<link rel="icon" type="image/x-icon" href="https://static.aistarfish.com/front-release/file/F2021082014202908600003617.bitbug_favicon(1).ico">
+	<link rel="stylesheet" href="/static/nav.css?v=12">
+	<link rel="stylesheet" href="/static/models.css?v=2">
+	<script defer src="/static/nav.js?v=12"></script>
+</head>
+<body style="padding: 0;">
+	<!-- 导航栏 -->
+	<div id="haixin-nav"></div>
+	
+    <div class="container" style="padding: 24px; max-width: 1400px; margin: 0 auto;">
+		<header>
+			<h1>⚙️ 模型管理</h1>
+			<p class="subtitle">添加、编辑和管理多模态AI模型配置</p>
+		</header>
+
+		<div class="card manager-only" style="display: none;">
+			<h3 class="section-title">➕ 添加新模型</h3>
+			
+			<div class="form-grid">
+				<div class="form-group">
+					<label for="provider">Provider <span class="optional">(支持自定义)</span></label>
+					<input id="provider" list="provider-list" placeholder="选择或输入provider名称" />
+					<datalist id="provider-list">
+						<option value="kimi">🌙 Kimi</option>
+						<option value="qwen">🧠 Qwen</option>
+						<option value="doubao">🔥 Doubao</option>
+						<option value="openai">OpenAI</option>
+						<option value="claude">Claude</option>
+						<option value="gemini">Gemini</option>
+					</datalist>
+				</div>
+
+				<div class="form-group">
+					<label for="label">显示名称 <span class="optional">(可选)</span></label>
+					<input id="label" placeholder="例如: Kimi Pro" />
+				</div>
+
+				<div class="form-group full-width">
+					<label for="base_url">Base URL</label>
+					<input id="base_url" placeholder="https://api.example.com" />
+				</div>
+
+				<div class="form-group full-width">
+					<label for="api_key">API Key</label>
+					<input id="api_key" type="password" placeholder="sk-..." />
+				</div>
+
+				<div class="form-group">
+					<label for="model">模型名称</label>
+					<input id="model" placeholder="例如: gpt-4-vision" />
+				</div>
+
+				<div class="form-group checkbox-group">
+					<label>
+						<input type="checkbox" id="enabled" checked/>
+						<span>启用此模型</span>
+					</label>
+				</div>
+			</div>
+
+			<div class="action-row">
+				<button id="create" class="btn-primary">
+					<span class="btn-icon">➕</span>
+					<span>添加模型</span>
+				</button>
+				<span id="status" class="status-text"></span>
+			</div>
+		</div>
+
+		<div class="card">
+			<h3 class="section-title">📋 已有模型</h3>
+			<div id="list" class="table-container">
+				<div class="loading-state">
+					<div class="spinner"></div>
+					<span>加载中...</span>
+				</div>
+			</div>
+		</div>
+
+		<div class="back-link">
+		<a href="/ai-model-compare/ui">← 返回模型对比页面</a>
+		</div>
+	</div>
+
+	<script src="/static/models.js?v=2"></script>
+</body>
+</html>
+

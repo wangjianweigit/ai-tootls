@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel解析工具 - 日志管理</title>
+    <link rel="icon" type="image/x-icon" href="https://static.aistarfish.com/front-release/file/F2021082014202908600003617.bitbug_favicon(1).ico">
+    <!-- 导航栏样式 -->
+    <link rel="stylesheet" href="/static/nav.css?v=12">
+    <script defer src="/static/nav.js?v=12"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .content {
+            padding: 20px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+        .section h3 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .control-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #5a6fd8;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #218838;
+        }
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-enabled {
+            background: #28a745;
+        }
+        .status-disabled {
+            background: #dc3545;
+        }
+        .log-viewer {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 2px 0;
+        }
+        .log-info { color: #4fc3f7; }
+        .log-warning { color: #ffb74d; }
+        .log-error { color: #f44336; }
+        .log-llm_request { color: #81c784; }
+        .log-llm_response { color: #64b5f6; }
+        .log-batch_start { color: #ba68c8; }
+        .log-batch_complete { color: #4db6ac; }
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+        .task-selector {
+            margin-bottom: 20px;
+        }
+        .task-selector select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            min-width: 200px;
+        }
+    </style>
+</head>
+<body>
+<!-- 导航栏 -->
+<div id="haixin-nav"></div>
+
+    <div class="container">
+        <div class="header">
+            <h1>Excel解析工具 - 日志管理</h1>
+            <p>监控和管理大模型交互日志、批次处理日志等</p>
+        </div>
+        
+        <div class="content">
+            <!-- 日志控制 -->
+            <div class="section">
+                <h3>日志控制</h3>
+                <div class="control-group">
+                    <button class="btn btn-success" onclick="controlLogging('enable_llm')">启用大模型日志</button>
+                    <button class="btn btn-danger" onclick="controlLogging('disable_llm')">禁用大模型日志</button>
+                    <button class="btn btn-success" onclick="controlLogging('enable_batch')">启用批次日志</button>
+                    <button class="btn btn-danger" onclick="controlLogging('disable_batch')">禁用批次日志</button>
+                    <button class="btn btn-success" onclick="controlLogging('enable_detailed')">启用详细日志</button>
+                    <button class="btn btn-danger" onclick="controlLogging('disable_detailed')">禁用详细日志</button>
+                    <button class="btn btn-success" onclick="controlLogging('enable_api_requests')">启用API请求日志</button>
+                    <button class="btn btn-danger" onclick="controlLogging('disable_api_requests')">禁用API请求日志</button>
+                    <button class="btn btn-success" onclick="controlLogging('enable_api_responses')">启用API响应日志</button>
+                    <button class="btn btn-danger" onclick="controlLogging('disable_api_responses')">禁用API响应日志</button>
+                </div>
+            </div>
+            
+            <!-- 当前状态 -->
+            <div class="section">
+                <h3>当前状态</h3>
+                <div id="logging-status">
+                    <p>加载中...</p>
+                </div>
+            </div>
+            
+            <!-- 任务选择器 -->
+            <div class="section">
+                <h3>任务日志查看</h3>
+                <div class="task-selector">
+                    <label for="task-select">选择任务:</label>
+                    <select id="task-select" onchange="loadTaskLogs()">
+                        <option value="">-- 选择任务 --</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <button class="btn btn-primary" onclick="loadGlobalLogs()">查看全局日志</button>
+                    <button class="btn btn-warning" onclick="clearLogs()">清空日志缓存</button>
+                    <button class="btn btn-success" onclick="exportLogs()">导出日志</button>
+                </div>
+            </div>
+            
+            <!-- 日志统计 -->
+            <div class="section">
+                <h3>日志统计</h3>
+                <div id="log-summary" class="summary-stats">
+                    <p>加载中...</p>
+                </div>
+            </div>
+            
+            <!-- 日志查看器 -->
+            <div class="section">
+                <h3>日志内容</h3>
+                <div id="log-viewer" class="log-viewer">
+                    选择任务或点击"查看全局日志"来查看日志内容...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadLoggingStatus();
+            loadGlobalLogs();
+        });
+
+        // 控制日志功能
+        async function controlLogging(action) {
+            try {
+                const response = await fetch('/excel-tools/logs/control', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ action: action })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    alert(result.message);
+                    loadLoggingStatus();
+                } else {
+                    alert('操作失败: ' + result.error);
+                }
+            } catch (error) {
+                alert('请求失败: ' + error.message);
+            }
+        }
+
+        // 加载日志状态
+        async function loadLoggingStatus() {
+            try {
+                const response = await fetch('/excel-tools/logs/status');
+                const status = await response.json();
+                
+                const statusHtml = `
+                    <div class="control-group">
+                        <div><span class="status-indicator ${status.enable_llm_logging ? 'status-enabled' : 'status-disabled'}"></span>大模型交互日志: ${status.enable_llm_logging ? '启用' : '禁用'}</div>
+                        <div><span class="status-indicator ${status.enable_batch_logging ? 'status-enabled' : 'status-disabled'}"></span>批次处理日志: ${status.enable_batch_logging ? '启用' : '禁用'}</div>
+                        <div><span class="status-indicator ${status.enable_detailed_logging ? 'status-enabled' : 'status-disabled'}"></span>详细日志: ${status.enable_detailed_logging ? '启用' : '禁用'}</div>
+                        <div><span class="status-indicator ${status.log_api_requests ? 'status-enabled' : 'status-disabled'}"></span>API请求日志: ${status.log_api_requests ? '启用' : '禁用'}</div>
+                        <div><span class="status-indicator ${status.log_api_responses ? 'status-enabled' : 'status-disabled'}"></span>API响应日志: ${status.log_api_responses ? '启用' : '禁用'}</div>
+                    </div>
+                `;
+                
+                document.getElementById('logging-status').innerHTML = statusHtml;
+            } catch (error) {
+                document.getElementById('logging-status').innerHTML = '<p>加载状态失败: ' + error.message + '</p>';
+            }
+        }
+
+        // 加载任务列表
+        async function loadTaskList() {
+            try {
+                const response = await fetch('/excel-tools/tasks');
+                const tasks = await response.json();
+                
+                const select = document.getElementById('task-select');
+                select.innerHTML = '<option value="">-- 选择任务 --</option>';
+                
+                tasks.forEach(task => {
+                    const option = document.createElement('option');
+                    option.value = task.task_id;
+                    option.textContent = `${task.name || task.task_id} (${task.status})`;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('加载任务列表失败:', error);
+            }
+        }
+
+        // 加载任务日志
+        async function loadTaskLogs() {
+            const taskId = document.getElementById('task-select').value;
+            if (!taskId) return;
+            
+            try {
+                const response = await fetch(`/excel-tools/logs/view/${taskId}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayLogs(result.logs, result.summary);
+                } else {
+                    alert('加载任务日志失败: ' + result.error);
+                }
+            } catch (error) {
+                alert('请求失败: ' + error.message);
+            }
+        }
+
+        // 加载全局日志
+        async function loadGlobalLogs() {
+            try {
+                const response = await fetch('/excel-tools/logs/view');
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayLogs(result.logs, result.summary);
+                } else {
+                    alert('加载全局日志失败: ' + result.error);
+                }
+            } catch (error) {
+                alert('请求失败: ' + error.message);
+            }
+        }
+
+        // 显示日志
+        function displayLogs(logs, summary) {
+            // 显示统计信息
+            if (summary) {
+                const summaryHtml = `
+                    <div class="stat-card">
+                        <div class="stat-number">${summary.total_logs || 0}</div>
+                        <div class="stat-label">总日志数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${summary.level_counts?.INFO || 0}</div>
+                        <div class="stat-label">信息日志</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${summary.level_counts?.ERROR || 0}</div>
+                        <div class="stat-label">错误日志</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${summary.level_counts?.LLM_REQUEST || 0}</div>
+                        <div class="stat-label">API请求</div>
+                    </div>
+                `;
+                document.getElementById('log-summary').innerHTML = summaryHtml;
+            }
+            
+            // 显示日志内容
+            const logViewer = document.getElementById('log-viewer');
+            if (logs && logs.length > 0) {
+                const logHtml = logs.map(log => {
+                    const timestamp = new Date(log.timestamp).toLocaleString();
+                    const levelClass = `log-${log.level.toLowerCase()}`;
+                    return `<div class="log-entry ${levelClass}">[${timestamp}] ${log.level}: ${log.message}</div>`;
+                }).join('');
+                logViewer.innerHTML = logHtml;
+            } else {
+                logViewer.innerHTML = '暂无日志内容';
+            }
+        }
+
+        // 清空日志
+        async function clearLogs() {
+            const taskId = document.getElementById('task-select').value;
+            const url = taskId ? `/excel-tools/logs/clear/${taskId}` : '/excel-tools/logs/clear';
+            
+            if (confirm('确定要清空日志缓存吗？')) {
+                try {
+                    const response = await fetch(url);
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        alert(result.message);
+                        if (taskId) {
+                            loadTaskLogs();
+                        } else {
+                            loadGlobalLogs();
+                        }
+                    } else {
+                        alert('清空失败: ' + result.error);
+                    }
+                } catch (error) {
+                    alert('请求失败: ' + error.message);
+                }
+            }
+        }
+
+        // 导出日志
+        async function exportLogs() {
+            const taskId = document.getElementById('task-select').value;
+            const url = taskId ? `/excel-tools/logs/export/${taskId}` : '/excel-tools/logs/export';
+            
+            try {
+                const response = await fetch(url);
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('日志导出成功: ' + result.export_path);
+                } else {
+                    alert('导出失败: ' + result.error);
+                }
+            } catch (error) {
+                alert('请求失败: ' + error.message);
+            }
+        }
+
+        // 定期刷新日志状态
+        setInterval(loadLoggingStatus, 10000); // 每10秒刷新一次状态
+    </script>
+</body>
+</html> 

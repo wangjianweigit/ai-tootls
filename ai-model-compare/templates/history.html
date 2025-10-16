@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>对比历史</title>
+	<link rel="icon" type="image/x-icon" href="https://static.aistarfish.com/front-release/file/F2021082014202908600003617.bitbug_favicon(1).ico">
+	<link rel="stylesheet" href="/static/nav.css?v=12">
+	<link rel="stylesheet" href="/static/history.css?v=4">
+	<script defer src="/static/nav.js?v=12"></script>
+</head>
+<body style="padding: 0;">
+	<!-- 导航栏 -->
+	<div id="haixin-nav"></div>
+	
+	<div class="container" style="padding: 24px;">
+		<header>
+			<h1>📜 对比历史</h1>
+			<p class="subtitle">查看之前的模型对比记录</p>
+		</header>
+
+		<div class="layout">
+			<!-- 左侧列表 -->
+			<div class="list-panel">
+				<div class="panel-header">
+					<h3>历史记录</h3>
+					<button id="refresh-btn" class="btn-secondary">
+						<span class="btn-icon">🔄</span>
+						<span>刷新</span>
+					</button>
+				</div>
+				<div id="list" class="list-container">
+					<div class="loading-state">
+						<div class="spinner"></div>
+						<span>加载中...</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- 右侧详情 -->
+			<div class="detail-panel">
+				<div class="panel-header">
+					<h3>详细信息</h3>
+				</div>
+				
+				<!-- 详情内容 -->
+				<div class="detail-content">
+					<!-- 详情信息 -->
+					<div id="detail" class="empty-state">
+						<span class="icon">👈</span>
+						<p>请从左侧选择一条记录查看详情</p>
+					</div>
+
+					<!-- 图片预览 -->
+					<div class="image-preview" id="image-section" style="display:none;">
+						<h4>📷 图片预览</h4>
+						<img id="preview" alt="预览图片"/>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="back-link">
+			<a href="/ai-model-compare/ui">← 返回模型对比页面</a>
+		</div>
+	</div>
+
+	<!-- 图片放大模态框 -->
+	<div id="imageModal" class="image-modal">
+		<span class="image-modal-close">&times;</span>
+		<img id="modalImage" src="" alt="放大图片">
+	</div>
+
+	<script src="/static/history.js?v=3"></script>
+</body>
+</html>
+

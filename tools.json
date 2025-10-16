@@ -1,0 +1,106 @@
+{
+  "brand": {
+    "title": "海心AI工具集",
+    "link": "/ai-model-compare/ui"
+  },
+  "tools": [
+    {
+      "id": "ai-model-compare",
+      "name": "AI模型对比",
+      "icon": "🤖",
+      "description": "多模态AI模型对比工具",
+      "enabled": true,
+      "directory": "ai-model-compare",
+      "owner": {
+        "name": "AI基础核心团队",
+        "email": "jianwei.w@aistarfish.com",
+        "contact": "承枫(01099)"
+      },
+      "service": {
+        "type": "fastapi",
+        "port": 8000,
+        "path_prefix": "/ai-model-compare",
+        "health_check": "/ai-model-compare/health"
+      },
+      "packaging": {
+        "exclude": [
+          "__pycache__",
+          "*.pyc",
+          "*.pyo",
+          ".venv",
+          "venv/",
+          "app.log",
+          "*.log",
+          ".uvicorn.pid",
+          "*.pid",
+          "data/*.sqlite3",
+          "data/*.db",
+          "models-export.json"
+        ]
+      },
+      "pages": [
+        {
+          "key": "compare",
+          "title": "模型对比",
+          "path": "/ai-model-compare/ui",
+          "icon": "🔬"
+        },
+        {
+          "key": "models",
+          "title": "模型管理",
+          "path": "/ai-model-compare/models-ui",
+          "icon": "⚙️"
+        },
+        {
+          "key": "history",
+          "title": "对比历史",
+          "path": "/ai-model-compare/history-ui",
+          "icon": "📜"
+        }
+      ]
+    },
+    {
+      "id": "excel-parse-tools",
+      "name": "Excel解析工具",
+      "icon": "📊",
+      "description": "Excel半结构化数据智能解析",
+      "enabled": true,
+      "directory": "excelParseTools",
+      "owner": {
+        "name": "AI基础核心团队",
+        "email": "jianwei.w@aistarfish.com",
+        "contact": "承枫(01099)"
+      },
+      "service": {
+        "type": "flask",
+        "port": 5001,
+        "path_prefix": "/excel-tools",
+        "health_check": "/excel-tools/health"
+      },
+      "packaging": {
+        "exclude": [
+          "__pycache__",
+          "*.pyc",
+          "*.pyo",
+          ".venv",
+          "venv/",
+          "*.log",
+          "*.pid",
+          "logs/",
+          "excel_parser_data/temp/",
+          "excel_parser_data/imports/*.xlsx",
+          "excel_parser_data/exports/*.xlsx"
+        ]
+      },
+      "pages": [
+        {
+          "key": "parser",
+          "title": "数据解析",
+          "path": "/excel-tools/",
+          "icon": "📝"
+        }
+      ]
+    }
+  ]
+}
+
